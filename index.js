@@ -30,9 +30,9 @@ module.exports = function (data, opts) {
 				var name = path.basename(filename, path.extname(filename));
 				var content;
 				if(path.extname(filename) === '.js') {
-					content = require(__dirname + path.sep + dir + path.sep + filename)[name];
+					content = require(path.resolve(dir + path.sep + filename))[name];
 				} else {
-					content = fs.readFileSync(__dirname + path.sep + dir + path.sep + filename, 'utf8');
+					content = fs.readFileSync(dir + path.sep + filename, 'utf8');
 				}
 
 				if(context) {
