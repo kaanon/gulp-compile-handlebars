@@ -8,7 +8,7 @@ _Soon_
 
 ## Example
 
-### `src/hello.handlebars`
+### `src/templates/hello.handlebars`
 
 ```erb
 <h1>Hello {{firstName}} {{lastName}}</h1>
@@ -49,13 +49,14 @@ gulp.task('default', function () {
 		firstName: 'Jérémie'
 	},
 	options = {
+			templates: 'src/templates',
 			data: 'src/data'
 			partials : 'src/partials',
 			helpers : 'src/helpers'
 		}
 	}
 
-	return gulp.src('src/*.handlebars')
+	return gulp.src(['src/templates/*.handlebars'])
 		.pipe(handlebars(templateData, options))
 		.pipe(rename('hello.html'))
 		.pipe(gulp.dest('dist'));

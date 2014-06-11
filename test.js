@@ -9,6 +9,7 @@ it('should compile Handlebars templates', function (cb) {
 	};
 
 	var options = {
+		templates: 'test/templates',
 		data: 'test/data',
 		partials: 'test/partials',
 		helpers: 'test/helpers'

@@ -72,9 +72,8 @@ module.exports = function (data, opts) {
 
 			if (options.data) {
 				if (_.isString(options.data)) {
-					var dataPath = process.cwd() + path.sep + options.data + path.sep;
-					jsonFile = dataPath + path.basename(gutil.replaceExtension(file.path, '.json'));
-					yamlFile = dataPath + path.basename(gutil.replaceExtension(file.path, '.yaml'));
+					jsonFile = gutil.replaceExtension(file.path.replace(options.templates, options.data), '.json');
+					yamlFile = gutil.replaceExtension(file.path.replace(options.templates, options.data), '.yaml');
 				} else if(_.isBoolean(options.data)) {
 					jsonFile = gutil.replaceExtension(file.path, '.json');
 					yamlFile = gutil.replaceExtension(file.path, '.yaml');
