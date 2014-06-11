@@ -8,39 +8,37 @@ _Soon_
 
 ## Example
 
-### `src/templates/hello.handlebars`
+```handlebars
+{{!-- src/templates/hello.handlebars --}}
 
-```erb
 <h1>Hello {{firstName}} {{lastName}}</h1>
 <h2>HELLO! {{capitals firstName}} {{capitals lastName}}</h2>
 {{> footer}}
 ```
 
-### `src/partials/footer.handlebars`
+```handlebars
+{{!-- src/partials/footer.handlebars --}}
 
-```erb
 <footer>the end</footer>
 ```
 
-### `src/helpers/capitals.js`
-
 ```javascript
+// src/helpers/capitals.js
+
 module.exports.capitals = function (str) {
 	return str.toUpperCase();
 };
 ```
 
-### `src/data/hello.json`
+```yml
+# src/data/hello.yaml
 
-```json
-{
-	"lastName": "Parker"
-}
+lastName: "Parker"
 ```
 
-### `gulpfile.js`
-
 ```js
+// gulpfile.js
+
 var gulp = require('gulp');
 var handlebars = require('gulp-compile-handlebars');
 
@@ -63,9 +61,9 @@ gulp.task('default', function () {
 });
 ```
 
-### `dist/hello.html`
-
+Result:
 ```html
+<!-- dist/hello.html -->
 <h1>Hello Jérémie Parker</h1>
 <h2>HELLO! JÉRÉMIE PARKER</h2>
 <footer>the end</footer>
