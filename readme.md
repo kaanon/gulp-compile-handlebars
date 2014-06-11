@@ -25,9 +25,9 @@ _Soon_
 ### `src/helpers/capitals.js`
 
 ```javascript
-function(str){
+module.exports.capitals = function (str) {
 	return str.toUpperCase();
-}
+};
 ```
 
 ### `src/data/hello.json`
