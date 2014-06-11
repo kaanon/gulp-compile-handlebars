@@ -1,26 +1,41 @@
 # [gulp](https://github.com/wearefractal/gulp)-compile-handlebars
-Forked from [gulp-template](https://github.com/sindresorhus/gulp-template)
-Inspired by [grunt-compile-handlebars](https://github.com/patrickkettner/grunt-compile-handlebars)
 
 > Compile [Handlebars templates](http://www.handlebarsjs.com/)
 
 ## Install
 
-Install with [npm](https://npmjs.org/package/gulp-compile-handlebars)
-
-```
-npm install --save-dev gulp-compile-handlebars
-```
-
+_Soon_
 
 ## Example
 
 ### `src/hello.handlebars`
 
 ```erb
-<h1>Hello {{firstName}}</h1>
-<h2>HELLO! {{capitals firstName}}</h2>
+<h1>Hello {{firstName}} {{lastName}}</h1>
+<h2>HELLO! {{capitals firstName}} {{capitals lastName}}</h2>
 {{> footer}}
+```
+
+### `src/partials/footer.handlebars`
+
+```erb
+<footer>the end</footer>
+```
+
+### `src/helpers/capitals.js`
+
+```javascript
+function(str){
+	return str.toUpperCase();
+}
+```
+
+### `src/data/hello.json`
+
+```json
+{
+	"lastName": "Parker"
+}
 ```
 
 ### `gulpfile.js`
@@ -31,20 +46,16 @@ var handlebars = require('gulp-compile-handlebars');
 
 gulp.task('default', function () {
 	var templateData = {
-		firstName: 'Kaanon'
+		firstName: 'Jérémie'
 	},
 	options = {
-		partials : {
-			footer : '<footer>the end</footer>'
-		},
-		helpers : {
-			capitals : function(str){
-				return str.toUpperCase();	
-			}
+			data: 'src/data'
+			partials : 'src/partials',
+			helpers : 'src/helpers'
 		}
 	}
 
-	return gulp.src('src/hello.handlebars')
+	return gulp.src('src/*.handlebars')
 		.pipe(handlebars(templateData, options))
 		.pipe(rename('hello.html'))
 		.pipe(gulp.dest('dist'));
@@ -54,11 +65,11 @@ gulp.task('default', function () {
 ### `dist/hello.html`
 
 ```html
-<h1>Hello Kaanon</h1>
-<h2>HELLO! KAANON</h2>
+<h1>Hello Jérémie Parker</h1>
+<h2>HELLO! JÉRÉMIE PARKER</h2>
 <footer>the end</footer>
 ```
 
 ## License
 
-MIT © [Kaanon MacFarlane](http://kaanon.com)
+MIT © [Kaanon MacFarlane](http://kaanon.com) & [Jérémie PARKER](http://jeremie-parker.com)

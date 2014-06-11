@@ -1,18 +1,20 @@
 'use strict';
 var assert = require('assert');
 var gutil = require('gulp-util');
-var template = require('./index');
+var template = require('./index.js');
 
 it('should compile Handlebars templates', function (cb) {
-	var stream = template(
-	{
-		people: ['foo', 'bar'],
-		message: 'BAZ'
-	}, 
-	{
-		partials : { header : '<header/>' },
-		helpers : { toLower : function(str) { return str.toLowerCase(); } }
-	});
+	var data = {
+		people: ['foo', 'bar']
+	};
+
+	var options = {
+		data: 'test/data',
+		partials: 'test/partials',
+		helpers: 'test/helpers'
+	};
+
+	var stream = template(data, options);
 
 	stream.on('data', function (data) {
 		assert.equal(data.contents.toString(), '<header/><li>foo</li><li>bar</li> baz');
@@ -20,6 +22,7 @@ it('should compile Handlebars templates', function (cb) {
 	});
 
 	stream.write(new gutil.File({
+		path: 'test/test.handlebars',
 		contents: new Buffer('{{> header}}{{#each people}}<li>{{.}}</li>{{/each}} {{toLower message}}')
 	}));
 

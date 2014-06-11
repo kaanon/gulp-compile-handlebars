@@ -28,12 +28,17 @@ module.exports = function (data, opts) {
 				}
 
 				var name = path.basename(filename, path.extname(filename));
-				var template = fs.readFileSync(dir + path.sep + filename, 'utf8');
-				console.log(name, filename);
-				if(context) {
-					fn.call(context, name, template);
+				var content;
+				if(path.extname(filename) === '.js') {
+					content = require(__dirname + path.sep + dir + path.sep + filename)[name];
 				} else {
-					fn(name, template);
+					content = fs.readFileSync(__dirname + path.sep + dir + path.sep + filename, 'utf8');
+				}
+
+				if(context) {
+					fn.call(context, name, content);
+				} else {
+					fn(name, content);
 				}
 			});
 		});
@@ -46,46 +51,6 @@ module.exports = function (data, opts) {
 	if (options.helpers) {
 		register(options.helpers, Handlebars.registerHelper, Handlebars);
 	}
-
-	// // Go through a partials object
-	// if (options.partials) {
-	// 	for (var p in options.partials) {
-	// 		Handlebars.registerPartial(p, options.partials[p]);
-	// 	}
-	// }
-
-	// // Go through a helpers object
-	// if (options.helpers) {
-	// 	for (var h in options.helpers) {
-	// 		Handlebars.registerHelper(h, options.helpers[h]);
-	// 	}
-	// }
-
-	// // Go through a partials directory array
-	// if (options.batch) {
-	// 	// Allow single string
-	// 	if (typeof options.batch === 'string') {
-	// 		options.batch = [options.batch];
-	// 	}
-
-	// 	options.batch.forEach(function (b) {
-	// 		var filenames = fs.readdirSync(b);
-
-	// 		filenames.forEach(function (filename) {
-	// 			// Needs a better name extractor (maybe with the path module)
-
-	// 			var name = filename.split('.')[0];
-	// 			// Don't allow hidden files
-	// 			if (!name.length) {
-	// 				return;
-	// 			}
-	// 			var template = fs.readFileSync(b + '/' + filename, 'utf8');
-	// 			Handlebars.registerPartial(b.split('/')
-	// 				.pop() + '/' + name, template);
-	// 		});
-	// 	});
-	// }
-
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
