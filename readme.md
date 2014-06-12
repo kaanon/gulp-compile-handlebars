@@ -4,7 +4,8 @@
 
 ## Install
 
-_Soon_
+_Currently:_
+`npm install https+git@github.com:p-j/gulp-compile-handlebars.git --save-dev`
 
 ## Example
 
@@ -70,5 +71,6 @@ Result:
 ```
 
 ## License
+Based on [Kaanon MacFarlane](http://kaanon.com) works which was itself base on [Sindre Sorhus](http://sindresorhus.com)'s.
 
-MIT © [Kaanon MacFarlane](http://kaanon.com) & [Jérémie PARKER](http://jeremie-parker.com)
+[MIT](http://opensource.org/licenses/MIT) © [Jérémie PARKER](http://jeremie-parker.com)
