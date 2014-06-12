@@ -2,6 +2,28 @@
 
 > Compile [Handlebars templates](http://www.handlebarsjs.com/)
 
+## New in this fork
+
+In this fork, the focus is to make it dead simple to build static website using handlebars, in a well structured project.
+
+It means that it is pretty opinionated as to how you should organised your files. 
+
+The project structure that is working for me looks like this :
+
+```
+|-src
+|---data
+|-----en
+|-----fr
+|---helpers
+|---partials
+|---templates
+|-----en
+|-----fr
+```
+
+I've taken the example of a multilang website to insist on the fact that the data folder structure should mimic the templates folder structure.
+
 ## Install
 
 _Currently:_
