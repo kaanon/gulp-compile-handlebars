@@ -27,7 +27,7 @@ I've taken the example of a multilang website to insist on the fact that the dat
 ## Install
 
 _Currently:_
-`npm install https+git@github.com:p-j/gulp-compile-handlebars.git --save-dev`
+`npm install p-j/gulp-compile-handlebars --save-dev`
 
 ## Example
 
@@ -95,4 +95,4 @@ Result:
 ## License
 Based on [Kaanon MacFarlane](http://kaanon.com) works which was itself base on [Sindre Sorhus](http://sindresorhus.com)'s.
 
-[MIT](http://opensource.org/licenses/MIT) © [Jérémie PARKER](http://jeremie-parker.com)
+[MIT](http://opensource.org/licenses/MIT) © [Jérémie Parker](http://jeremie-parker.com)
