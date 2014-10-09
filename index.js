@@ -97,7 +97,7 @@ module.exports = function (data, opts) {
 	{
 		var includeHelpersRegex = /{{@([a-zA-Z-0-9\.\/\~]+)/g;
 		var includeBlockHelpersRegex = /{{#@([a-zA-Z-0-9\.\/\~]+)/g;
-		var closingIncludeBlockHelpers = /{{\/([a-zA-Z-0-9\.\/\~]+)/g;
+		var closingIncludeBlockHelpers = /{{(~?)\/([a-zA-Z-0-9\.\/\~]+)/g;
 
 
 		// replace internal requires with helper form
@@ -119,8 +119,8 @@ module.exports = function (data, opts) {
 			return '{{#' + sanitize(helperId);
 		});
 		// Work out closing to the block helper {{/helper}}
-		content = content.replace(closingIncludeBlockHelpers, function(match, dep) {
-			return '{{/' + sanitize(dep);
+		content = content.replace(closingIncludeBlockHelpers, function(match, tilde, dep) {
+			return '{{' + tilde + '/' + sanitize(dep);
 		});
 
 		var arrayUnique = function(a) {
