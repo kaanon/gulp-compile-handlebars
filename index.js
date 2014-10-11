@@ -7,12 +7,7 @@ var path = require("path");
 module.exports = function (data, opts) {
 
 	var options = opts || {};
-	//Go through a partials object
-	if(options.partials){
-		for(var p in options.partials){
-			Handlebars.registerPartial(p, options.partials[p]);
-		}
-	}
+
 	//Go through a helpers object
 	if(options.helpers){
 		for(var h in options.helpers){
@@ -172,6 +167,21 @@ module.exports = function (data, opts) {
 
 		return content;
 	};
+
+
+	// Go through a partials object
+	if(options.partials){
+		for(var p in options.partials){
+			var partialContents = options.partials[p];
+			if(options.ignorePartials){
+				mockPartials(partialContents);
+			}
+			partialContents = registerAtPathHelpers(partialContents, options.helpersAtPathMap || {});
+
+			Handlebars.registerPartial(p, partialContents);
+		}
+	}
+
 
 
 	return through.obj(function (file, enc, cb) {
