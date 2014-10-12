@@ -139,6 +139,20 @@ gulp.task('default', function () {
 ```
 
 
+## Example: Using `module.exports.compile`:
+
+This module also exports `compile` which works exactly the same except returns the compiled template instead of a gulp stream.
+
+*Supports `@/at` helper syntax*
+
+```
+var handlebars = require('gulp-compile-handlebars');
+
+var handlebarsCompileOptions = {};
+
+handlebars.compile(source, context, handlebarsCompileOptions);
+```
+
 ## Options
 
 - __ignorePartials__ : ignores any unknown partials. Useful if you only want to handle part of the file
