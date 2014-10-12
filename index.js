@@ -2,16 +2,135 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var Handlebars = require('handlebars');
 var fs = require('fs');
+var path = require("path");
+
+
+/**
+ * For handling unknown partials
+ * @method mockPartials
+ * @param  {string}     content Contents of handlebars file
+ */
+var mockPartials = function(content){
+	var regex = /{{> (.*)}}/gim, match, partial;
+	if(content.match(regex)){
+		while((match = regex.exec(content)) !== null){
+			partial = match[1];
+			//Only register an empty partial if the partial has not already been registered
+			if(!Handlebars.partials.hasOwnProperty(partial)){
+				Handlebars.registerPartial(partial, '');
+			}
+		}
+	}
+};
+
+// options: 
+// ```
+//	helpersAtPathMap: {
+//		'helpers': './src/js/hbs-helpers/'
+//	}
+// {{@helpers/slugify.helper
+// {{#@helpers/include.helper}}...{{/helpers/include.helper}}
+var registerAtPathHelpers = function(content, basePathMap)
+{
+	var includeHelpersRegex = /{{@([a-zA-Z-0-9\.\/\~]+)/g;
+	var includeBlockHelpersRegex = /{{#@([a-zA-Z-0-9\.\/\~]+)/g;
+	var closingIncludeBlockHelpers = /{{(~?)\/([a-zA-Z-0-9\.\/\~]+)/g;
+
+
+	// replace internal requires with helper form
+	var sanitize = function(name) {
+		return name.replace('/', '-').replace('.', '').replace('~', '_');
+	};
+
+	// Grab all of the helpers out of the template
+	var helpers = [];
+	// Work out the normal helpers
+	content = content.replace(includeHelpersRegex, function(match, dep) {
+		helpers.push(dep);
+		return '{{' + sanitize(dep);
+	});
+	// Work out the block helpers
+	content = content.replace(includeBlockHelpersRegex, function(match, dep) {
+		var helperId = dep;
+		helpers.push(helperId);
+		return '{{#' + sanitize(helperId);
+	});
+	// Work out closing to the block helper {{/helper}}
+	content = content.replace(closingIncludeBlockHelpers, function(match, tilde, dep) {
+		return '{{' + tilde + '/' + sanitize(dep);
+	});
+
+	var arrayUnique = function(a) {
+		return a.reduce(function(p, c) {
+			if (p.indexOf(c) < 0) p.push(c);
+			return p;
+		}, []);
+	};
+
+	// No repeats (because it is unnecessary)
+	helpers = arrayUnique(helpers);
+
+	// We can only
+	if(Object.keys(basePathMap).length > 0)
+	{
+		// Register the helpers
+		for (var i = 0; i < helpers.length; i++)
+		{
+			var helperPath = helpers[i];
+
+			// Replace any defined module names with the appropriate relative paths
+			Object.keys(basePathMap).forEach(function(mapKey, index, array) {
+				var basePath = basePathMap[mapKey];
+				helperPath = helperPath.replace(new RegExp("^(" + mapKey + ")/"), basePath);
+			});
+
+			// Turn the path from relative from the calling file to absolute
+			helperPath = path.resolve(process.cwd(), helperPath);
+			if (process.platform === "win32") {
+				// Switch backslash to forward slash
+				helperPath = helperPath.replace(/\\/g, "/");
+			}
+
+
+			var helperFunc = null;
+			try {
+				// Try to get the helper function
+				helperFunc = require(helperPath);
+			} catch(e) {
+
+			}
+			if(helperFunc !== null)
+			{
+				// Actually register the helper, if we could find it
+				Handlebars.registerHelper(sanitize(helpers[i]), helperFunc);
+			}
+		}
+	}
+
+	return content;
+};
+
+var compileHandlebars = function(source, context, opts)
+{
+	var options = opts || {};
+
+	if(options.ignorePartials){
+		mockPartials(source);
+	}
+	source = registerAtPathHelpers(source, options.helpersAtPathMap || {});
+
+	var template = Handlebars.compile(source);
+
+	return template(context);
+};
+
 
 module.exports = function (data, opts) {
 
+	Handlebars.debugIdAsdf = Math.random()*101|0;
+
 	var options = opts || {};
-	//Go through a partials object
-	if(options.partials){
-		for(var p in options.partials){
-			Handlebars.registerPartial(p, options.partials[p]);
-		}
-	}
+
 	//Go through a helpers object
 	if(options.helpers){
 		for(var h in options.helpers){
@@ -49,12 +168,14 @@ module.exports = function (data, opts) {
 					var name = filename.substr(0, filename.lastIndexOf('.'));
 
 					var template = fs.readFileSync(dir + '/' + filename, 'utf8');
+
+					template = registerAtPathHelpers(template, options.helpersAtPathMap || {});
 					Handlebars.registerPartial(registrationDir + '/' + name, template);
 					// console.log('Registered:', registrationDir + '/' + name)
 				}
 			}
 		});
-	}
+	};
 
 
 	// Go through a partials directory array
@@ -63,27 +184,24 @@ module.exports = function (data, opts) {
 		if(typeof options.batch === 'string') options.batch = [options.batch];
 
 		options.batch.forEach(function (piece) {
-			searchDirForPartials(piece, piece.split('/').pop(), 0)
+			searchDirForPartials(piece, piece.split('/').pop(), 0);
 		});
 	}
 
-	/**
-	 * For handling unknown partials
-	 * @method mockPartials
-	 * @param  {string}     content Contents of handlebars file
-	 */
-	var mockPartials = function(content){
-		var regex = /{{> (.*)}}/gim, match, partial;
-		if(content.match(regex)){
-			while((match = regex.exec(content)) !== null){
-				partial = match[1];
-				//Only register an empty partial if the partial has not already been registered
-				if(!Handlebars.partials.hasOwnProperty(partial)){
-					Handlebars.registerPartial(partial, gutil.noop);
-				}
+
+	// Go through a partials object
+	if(options.partials){
+		for(var p in options.partials){
+			var partialContents = options.partials[p];
+			if(options.ignorePartials){
+				mockPartials(partialContents);
 			}
+			partialContents = registerAtPathHelpers(partialContents, options.helpersAtPathMap || {});
+
+			Handlebars.registerPartial(p, partialContents);
 		}
-	};
+	}
+
 
 
 	return through.obj(function (file, enc, cb) {
@@ -99,11 +217,10 @@ module.exports = function (data, opts) {
 
 		try {
 			var fileContents = file.contents.toString();
-			if(options.ignorePartials){
-				mockPartials(fileContents);
-			}
-			var template = Handlebars.compile(fileContents);
-			file.contents = new Buffer(template(data));
+			
+			var compiledTemplate = compileHandlebars(fileContents, data, options);
+
+			file.contents = new Buffer(compiledTemplate);
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-compile-handlebars', err));
 		}
@@ -111,4 +228,11 @@ module.exports = function (data, opts) {
 		this.push(file);
 		cb();
 	});
+};
+
+
+module.exports.compile = function(source, context, opts) {
+	var compiledTemplate = compileHandlebars(source, context, opts);
+
+	return compiledTemplate;
 };
