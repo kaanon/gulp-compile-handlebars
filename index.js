@@ -43,7 +43,6 @@ module.exports = function (data, opts) {
 	var registerPartial = function (filename, base) {
 		if (!isHandlebars(filename)) { return; }
 		var name = partialName(filename, base);
-		console.log(name);
 		var template = fs.readFileSync(filename, 'utf8');
 		Handlebars.registerPartial(name, template);
 	};
