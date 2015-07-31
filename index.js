@@ -112,7 +112,7 @@ function handlebars(data, opts) {
 			if(file.data){
 				_data = extend(_data, file.data);
 			}
-			var template = Handlebars.compile(fileContents);
+			var template = Handlebars.compile(fileContents, options);
 			file.contents = new Buffer(template(_data));
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-compile-handlebars', err));
