@@ -30,7 +30,7 @@
   "dependencies": {
     "gulp-util": "^3.0.3",
     "through2": "^0.6.3",
-    "handlebars": "^3.0.0"
+    "handlebars": "~4.0.2"
   },
   "devDependencies": {
     "mocha": "*"

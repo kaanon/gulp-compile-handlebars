@@ -1,22 +1,28 @@
 var gutil = require('gulp-util');
 var through = require('through2');
-var Handlebars = require('handlebars');
+
 var fs = require('fs');
 var extend = require('util')._extend;
 
-function handlebars(data, opts) {
 
-	var options = opts || {};
+module.exports = function(data, opts) {
+
+
+	var options = opts || {},
+		_this = this;
+	
+	this.Handlebars = options.handlebars ? options.handlebars : require('handlebars');
+
 	//Go through a partials object
 	if(options.partials){
 		for(var p in options.partials){
-			Handlebars.registerPartial(p, options.partials[p]);
+			this.Handlebars.registerPartial(p, options.partials[p]);
 		}
 	}
 	//Go through a helpers object
 	if(options.helpers){
 		for(var h in options.helpers){
-			Handlebars.registerHelper(h, options.helpers[h]);
+			this.Handlebars.registerHelper(h, options.helpers[h]);
 		}
 	}
 
@@ -44,7 +50,7 @@ function handlebars(data, opts) {
 		if (!isHandlebars(filename)) { return; }
 		var name = partialName(filename, base);
 		var template = fs.readFileSync(filename, 'utf8');
-		Handlebars.registerPartial(name, template);
+		_this.Handlebars.registerPartial(name, template);
 	};
 
 	var registerPartials = function (dir, base, depth) {
@@ -81,8 +87,8 @@ function handlebars(data, opts) {
 			while((match = regex.exec(content)) !== null){
 				partial = match[1];
 				//Only register an empty partial if the partial has not already been registered
-				if(!Handlebars.partials.hasOwnProperty(partial)){
-					Handlebars.registerPartial(partial, '');
+				if(!_this.Handlebars.partials.hasOwnProperty(partial)){
+					_this.Handlebars.registerPartial(partial, '');
 				}
 			}
 		}
@@ -112,7 +118,7 @@ function handlebars(data, opts) {
 			if(file.data){
 				_data = extend(_data, file.data);
 			}
-			var template = Handlebars.compile(fileContents);
+			var template = _this.Handlebars.compile(fileContents);
 			file.contents = new Buffer(template(_data));
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-compile-handlebars', err));
@@ -122,8 +128,3 @@ function handlebars(data, opts) {
 		cb();
 	});
 }
-
-// Expose the Handlebars object
-handlebars.Handlebars = Handlebars;
-
-module.exports = handlebars;
