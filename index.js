@@ -3,6 +3,7 @@ var through = require('through2');
 var Handlebars = require('handlebars');
 var fs = require('fs');
 var extend = require('util')._extend;
+var path = require('path');
 
 function handlebars(data, opts) {
 
@@ -36,9 +37,13 @@ function handlebars(data, opts) {
 	};
 
 	var partialName = function (filename, base) {
-		var name = filename.substr(0, filename.lastIndexOf('.'));
-		name = name.replace(new RegExp('^' + base + '\\/'), '');
-		return name.substring(name.charAt(0) === '_' ? 1 : 0);
+		var name = path.join(path.dirname(filename), path.basename(filename, path.extname(filename)));
+		if (name.indexOf(base) === 0) {
+			name = name.slice(base.length);
+		}
+		name = name.replace(/\\/g, '/');
+
+		return name.substring(name.charAt(0) === '_' ? 1 : 0);;
 	};
 
 	var registerPartial = function (filename, base) {
@@ -52,7 +57,7 @@ function handlebars(data, opts) {
 		if (depth > maxDepth) { return; }
 		base = base || dir;
 		fs.readdirSync(dir).forEach(function (basename) {
-			var filename = dir + '/' + basename;
+			var filename = path.join(dir, basename);
 			if (isDir(filename)) {
 				registerPartials(filename, base);
 			} else {
