@@ -65,15 +65,15 @@ it('should compile Handlebars templates, and use batched partials', function (cb
 });
 
 it('should compile Handlebars templates, and use batched NESTED partials', function (cb) {
-	var stream = template({}, {});
+	var stream = template({}, { batch: ['test/partials'] });
 
 	stream.on('data', function (data) {
-		assert.equal(data.contents.toString(), 'Failover content');
+		assert.equal(data.contents.toString(), 'Mobile Header Goes Here');
 		cb();
 	});
 
 	stream.write(new gutil.File({
-		contents: new Buffer('{{#> myPartial }}Failover content{{/myPartial}}')
+		contents: new Buffer('{{> mobile/header-test}}')
 	}));
 
 	stream.end();
@@ -93,6 +93,7 @@ it('should compile Handlebars templates, and use multiple batched NESTED partial
 
 	stream.end();
 });
+
 
 it('should compile Handlebars templates with no helpers or partials', function (cb) {
 	var stream = template(	{people: ['foo', 'bar']});
@@ -147,17 +148,16 @@ it('should not require a default data object', function (cb) {
 	stream.end();
 
 });
-
 it('should support failover partial blocks when no partial is provided', function (cb) {
-	var stream = template({}, { batch: ['test/partials/desktop', 'test/partials/mobile'] });
+	var stream = template({}, {});
 
 	stream.on('data', function (data) {
-		assert.equal(data.contents.toString(), 'Desktop Header Goes Here');
+		assert.equal(data.contents.toString(), 'Failover content');
 		cb();
 	});
 
 	stream.write(new gutil.File({
-		contents: new Buffer('{{> desktop/header-test}}')
+		contents: new Buffer('{{#> myPartial }}Failover content{{/myPartial}}')
 	}));
 
 	stream.end();
