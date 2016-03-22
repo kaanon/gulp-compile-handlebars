@@ -148,3 +148,18 @@ it('should not require a default data object', function (cb) {
 	stream.end();
 
 });
+
+it('should support failover partial blocks when no partial is provided', function (cb) {
+	var stream = template({}, {});
+
+	stream.on('data', function (data) {
+		assert.equal(data.contents.toString(), 'Failover content');
+		cb();
+	});
+
+	stream.write(new gutil.File({
+		contents: new Buffer('{{#> myPartial }}Failover content{{/myPartial}}')
+	}));
+
+	stream.end();
+});
