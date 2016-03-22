@@ -105,11 +105,6 @@ function handlebars(data, opts) {
 
 
 	return through.obj(function (file, enc, cb) {
-		
-		if (file.data) {
-		  data = extend(file.data, data);
-		}
-
 		var _data = extend({}, data);
 
 		if (file.isNull()) {
