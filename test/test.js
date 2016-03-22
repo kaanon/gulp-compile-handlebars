@@ -94,6 +94,7 @@ it('should compile Handlebars templates, and use multiple batched NESTED partial
 	stream.end();
 });
 
+
 it('should compile Handlebars templates with no helpers or partials', function (cb) {
 	var stream = template(	{people: ['foo', 'bar']});
 
