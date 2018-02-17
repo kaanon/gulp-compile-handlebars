@@ -77,6 +77,9 @@ gulp.task('default', function () {
 - __batch__ : Javascript array of filepaths to use as partials
 - __helpers__: javascript functions to stand in for helpers used in the handlebars files
 - __compile__: compile options. See [handlebars reference](http://handlebarsjs.com/reference.html#base-compile) for possible values
+- __templateComments__: render start and end comments when including partials. This can be useful when using as a static site generator. Ignored if not set.
+    - __templateComments.start__: comment to use at the beginning of the partial
+    - __templateComments.end__: comment to use at the end of the partial
 
 ## handlebars.Handlebars
 
