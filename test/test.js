@@ -148,3 +148,23 @@ it('should not require a default data object', function (cb) {
 	stream.end();
 
 });
+
+it('should output template comments if specified', function (cb) {
+  var stream = template({}, {
+  	batch: ['test/partials'],
+		templateComments: {
+  		start: "<!-- START partial {{partial}} -->",
+			end: "<!-- END partial {{partial}} -->"
+  	}});
+
+  stream.on('data', function (data) {
+    assert.equal(data.contents.toString(), '<!-- START partial header-test -->Header Goes Here<!-- END partial header-test -->');
+    cb();
+  });
+
+  stream.write(new gutil.File({
+    contents: new Buffer('{{> header-test}}')
+  }));
+
+  stream.end();
+});

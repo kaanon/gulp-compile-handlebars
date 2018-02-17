@@ -57,7 +57,17 @@ function handlebars(data, opts) {
 	var registerPartial = function (filename, base) {
 		if (!isHandlebars(filename)) { return; }
 		var name = partialName(filename, base);
-		var template = fs.readFileSync(filename, 'utf8');
+		var template;
+
+		if(typeof opts.templateComments === "object"
+				&& opts.templateComments.hasOwnProperty("start")
+				&& opts.templateComments.hasOwnProperty("end")) {
+			var startComment = opts.templateComments.start.replace("{{partial}}", name);
+			var endComment = opts.templateComments.end.replace("{{partial}}", name);
+			template = startComment + fs.readFileSync(filename, 'utf8') + endComment;
+		} else {
+      template = fs.readFileSync(filename, 'utf8');
+		}
 
 		hb.registerPartial(name, template);
 	};
