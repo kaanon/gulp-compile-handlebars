@@ -148,3 +148,45 @@ it('should not require a default data object', function (cb) {
 	stream.end();
 
 });
+
+it('should output template comments if specified', function (cb) {
+  var stream = template({}, {
+  	batch: ['test/partials'],
+		debugMode: {
+  		start: "<!-- START partial {{partial}} -->",
+			end: "<!-- END partial {{partial}} -->"
+  	}});
+
+  stream.on('data', function (data) {
+    assert.equal(data.contents.toString(), '<!-- START partial header-test -->Header Goes Here<!-- END partial header-test -->');
+    cb();
+  });
+
+  stream.write(new gutil.File({
+    contents: new Buffer('{{> header-test}}')
+  }));
+
+  stream.end();
+});
+
+it('should output current context if specified', function (cb) {
+  var stream = template({
+		"dataContext": "Test"
+	}, {
+    batch: ['test/partials'],
+    debugMode: {
+      logContext: "<!-- Current Context: {{context}} -->"
+    }});
+
+  var expectedContext = JSON.stringify({"dataContext": "Test", "explicitContext": "value"});
+  stream.on('data', function (data) {
+    assert.equal(data.contents.toString(), '<!-- Current Context: ' + expectedContext + ' -->Header Goes Here');
+    cb();
+  });
+
+  stream.write(new gutil.File({
+    contents: new Buffer('{{> header-test explicitContext="value"}}')
+  }));
+
+  stream.end();
+});
