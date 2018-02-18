@@ -78,8 +78,9 @@ gulp.task('default', function () {
 - __helpers__: javascript functions to stand in for helpers used in the handlebars files
 - __compile__: compile options. See [handlebars reference](http://handlebarsjs.com/reference.html#base-compile) for possible values
 - __debugMode__: enable debug mode when including partials. This can be useful when using as a static site generator. Ignored if not set.
-    - __debugMode.start__: comment to use at the beginning of the partial
-    - __debugMode.end__: comment to use at the end of the partial
+    - __debugMode.start__: HTML string to use at the beginning of a partial. Specifiy a string (preferably a HTML comment). ```{{partial}}``` will be replaced with current partial name.
+    - __debugMode.end__: HTML string to use at the end of a partial. Specifiy a string (preferably a HTML comment). ```{{partial}}``` will be replaced with current partial name.
+    - __debugMode.logContext__: HTML string to output the current context of a partial. Specify a string (preferably a HTML comment) which will be placed before the actual partial content. ```{{context}}``` will be replaced with current context as JSON.
 
 ## handlebars.Handlebars
 
