@@ -152,7 +152,7 @@ it('should not require a default data object', function (cb) {
 it('should output template comments if specified', function (cb) {
   var stream = template({}, {
   	batch: ['test/partials'],
-		templateComments: {
+		debugMode: {
   		start: "<!-- START partial {{partial}} -->",
 			end: "<!-- END partial {{partial}} -->"
   	}});
