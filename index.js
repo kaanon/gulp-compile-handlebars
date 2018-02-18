@@ -62,6 +62,11 @@ function handlebars(data, opts) {
 		if(typeof opts.debugMode === "object") {
 			var startComment = "";
 			var endComment = "";
+			var logContext = "";
+			var logRootContext = "";
+			var logContextHelper = function(context) {
+        return new handlebars.Handlebars.SafeString(JSON.stringify(context))
+      };
 
 			if(typeof opts.debugMode.start === "string") {
         startComment = opts.debugMode.start.replace("{{partial}}", name);
@@ -71,7 +76,13 @@ function handlebars(data, opts) {
         endComment = opts.debugMode.end.replace("{{partial}}", name);
 			}
 
-      template = startComment + fs.readFileSync(filename, 'utf8') + endComment;
+			if(typeof opts.debugMode.logContext === "string") {
+				var logHelperName = "logHelper_" + Date.now();
+        hb.registerHelper(logHelperName, logContextHelper);
+        logContext = opts.debugMode.logContext.replace("{{context}}", "{{" + logHelperName + " .}}");
+			}
+
+      template = startComment + logContext + fs.readFileSync(filename, 'utf8') + endComment;
 
 		} else {
       template = fs.readFileSync(filename, 'utf8');

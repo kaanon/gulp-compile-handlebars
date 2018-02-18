@@ -168,3 +168,25 @@ it('should output template comments if specified', function (cb) {
 
   stream.end();
 });
+
+it('should output current context if specified', function (cb) {
+  var stream = template({
+		"dataContext": "Test"
+	}, {
+    batch: ['test/partials'],
+    debugMode: {
+      logContext: "<!-- Current Context: {{context}} -->"
+    }});
+
+  var expectedContext = JSON.stringify({"dataContext": "Test", "explicitContext": "value"});
+  stream.on('data', function (data) {
+    assert.equal(data.contents.toString(), '<!-- Current Context: ' + expectedContext + ' -->Header Goes Here');
+    cb();
+  });
+
+  stream.write(new gutil.File({
+    contents: new Buffer('{{> header-test explicitContext="value"}}')
+  }));
+
+  stream.end();
+});
